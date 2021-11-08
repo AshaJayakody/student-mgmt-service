@@ -5,9 +5,17 @@ import { StudentService } from './student.service';
 describe('StudentResolver', () => {
   let resolver: StudentResolver;
 
+  const studentService = {};
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StudentResolver, StudentService],
+      providers: [
+        StudentResolver,
+        {
+          provide: StudentService,
+          useValue: studentService,
+        },
+      ],
     }).compile();
 
     resolver = module.get<StudentResolver>(StudentResolver);

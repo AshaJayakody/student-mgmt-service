@@ -3,16 +3,22 @@ import { StudentService } from './student.service';
 import { Student } from './entities/student.entity';
 import { CreateStudentInput } from './dto/create-student.input';
 import { UpdateStudentInput } from './dto/update-student.input';
+import { Logger } from '@nestjs/common';
 
 @Resolver(() => Student)
 export class StudentResolver {
+  private readonly logger = new Logger(StudentService.name);
   constructor(private readonly studentService: StudentService) {}
 
   @Mutation(() => Student, { name: 'createStudent' })
   createStudent(
     @Args('createStudentInput') createStudentInput: CreateStudentInput,
   ) {
-    return this.studentService.create(createStudentInput);
+    try {
+      return this.studentService.create(createStudentInput);
+    } catch (e) {
+      this.logger.error(new Date().toUTCString() + '\n' + e.message);
+    }
   }
 
   @Mutation(() => [Student], { name: 'createBulkStudents' })
@@ -20,31 +26,51 @@ export class StudentResolver {
     @Args({ name: 'createStudentInputBulk', type: () => [CreateStudentInput] })
     createStudentInputBulk: CreateStudentInput[],
   ) {
-    return this.studentService.createBulk(createStudentInputBulk);
+    try {
+      return this.studentService.createBulk(createStudentInputBulk);
+    } catch (e) {
+      this.logger.error(new Date().toUTCString() + '-' + e.message);
+    }
   }
 
   @Query(() => [Student], { name: 'getAllStudent' })
   findAll() {
-    return this.studentService.findAll();
+    try {
+      return this.studentService.findAll();
+    } catch (e) {
+      this.logger.error(new Date().toUTCString() + '-' + e.message);
+    }
   }
 
   @Query(() => Student, { name: 'getStudent' })
   findOne(@Args('id', { type: () => Number }) id: number) {
-    return this.studentService.findOne(id);
+    try{
+      return this.studentService.findOne(id);
+    } catch (e) {
+      this.logger.error(new Date().toUTCString() + '-' + e.message);
+    }
   }
 
   @Mutation(() => Student, { name: 'updateStudent' })
   updateStudent(
     @Args('updateStudentInput') updateStudentInput: UpdateStudentInput,
   ) {
-    return this.studentService.update(
-      updateStudentInput.id,
-      updateStudentInput,
-    );
+    try{
+      return this.studentService.update(
+        updateStudentInput.id,
+        updateStudentInput,
+      );
+    }catch (e) {
+      this.logger.error(new Date().toUTCString() + '-' + e.message);
+    }
   }
 
   @Mutation(() => Student, { name: 'removeStudent' })
   removeStudent(@Args('id', { type: () => Number }) id: number) {
-    return this.studentService.remove(id);
+    try{
+      return this.studentService.remove(id);
+    }catch (e) {
+      this.logger.error(new Date().toUTCString() + '\n' + e.message);
+    }
   }
 }
