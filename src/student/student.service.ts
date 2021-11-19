@@ -41,8 +41,9 @@ export class StudentService {
       throw new NotFoundException('student not found');
     }
 
-    Object.assign(student, updateStudentInput);
-    return await this.studentRepository.save(student);
+    let updateStudent = this.studentRepository.create(updateStudentInput);
+    updateStudent.id = id;
+    return await this.studentRepository.save(updateStudent);
   }
 
   async remove(id: number): Promise<Student> {
